@@ -1,0 +1,20 @@
+# Environments & Secrets
+.env
+.env.*
+!.env.example
+*.env
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Storage & Cache
+storage/
+.chroma/
+*.log
+temp_graph.html
+data/temp_graph.html
+
+# IDE
+.vscode/
+.idea/
