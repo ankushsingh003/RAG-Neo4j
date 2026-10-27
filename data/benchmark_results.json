@@ -1,0 +1,233 @@
+{
+  "baseline_vector": {
+    "samples": [
+      {
+        "id": "eval_01",
+        "question": "What is the formula and smoothing constant used in Reciprocal Rank Fusion (RRF)?",
+        "answer": "Reciprocal Rank Fusion (RRF): RRF calculates a combined score for each document d across retrieval methods M according to the formula: RRF_Score(d) = SUM_{m in M} [ 1 / (k + rank_m(d)) ] Here, k is a smoothing constant, typically set to 60. [01_advanced_rag_architectures_chunk_00] In standard vector RAG, questions such as \"What common architectural dependency is shared between System Alpha and System Gamma?\" frequently fail because the connecting entities exist across different documents and chunks. [02_graph_rag_and_neo4j_chunk_00] RRF is scale-invariant and does not require calibrating heterogeneous raw score distributions between BM25 scores (unbounded positive floats) and cosine similarities ([-1, 1]). [01_advanced_rag_architectures_chunk_01] Convex Linear Combination (Weighted Score Fusion): Linear fusion normalizes both sparse scores and dense scores to a uniform [0, 1] range using MinMax or Sigmoid normalization: Score_Hybrid(d) = alpha * Score_Dense_norm(d) + (1 - alpha) * Score_BM25_norm(d) The parameter alpha balances lexical and semantic priority (alpha = 0.5 represents an equal split). [01_advanced_rag_architectures_chunk_01]",
+        "metrics": {
+          "faithfulness": 0.6,
+          "answer_relevancy": 0.7738,
+          "context_precision": 1.0,
+          "context_recall": 1.0,
+          "ragas_score": 0.8434,
+          "latency_ms": 21.84
+        }
+      },
+      {
+        "id": "eval_02",
+        "question": "Why is a Cross-Encoder reranker more accurate than a bi-encoder for semantic passage scoring?",
+        "answer": "Cross-Encoder Reranking While bi-encoders produce separate embeddings for query and document, a Cross-Encoder passes the query and candidate passage simultaneously through cross-attention layers (e.g., `cross-encoder/ms-marco-MiniLM-L-6-v2` or `bge-reranker-large`). [01_advanced_rag_architectures_chunk_01] Reciprocal Rank Fusion (RRF): RRF calculates a combined score for each document d across retrieval methods M according to the formula: RRF_Score(d) = SUM_{m in M} [ 1 / (k + rank_m(d)) ] Here, k is a smoothing constant, typically set to 60. [01_advanced_rag_architectures_chunk_00] Convex Linear Combination (Weighted Score Fusion): Linear fusion normalizes both sparse scores and dense scores to a uniform [0, 1] range using MinMax or Sigmoid normalization: Score_Hybrid(d) = alpha * Score_Dense_norm(d) + (1 - alpha) * Score_BM25_norm(d) The parameter alpha balances lexical and semantic priority (alpha = 0.5 represents an equal split). [01_advanced_rag_architectures_chunk_01] In a production pipeline, Hybrid retrieval gathers top-25 candidate passages (high recall phase), and the Cross-Encoder re-ranks these into the top-3 to top-5 most relevant passages (high precision phase) before feeding them to the generator LLM. [01_advanced_rag_architectures_chunk_01]",
+        "metrics": {
+          "faithfulness": 0.6,
+          "answer_relevancy": 0.8452,
+          "context_precision": 1.0,
+          "context_recall": 1.0,
+          "ragas_score": 0.8613,
+          "latency_ms": 17.76
+        }
+      },
+      {
+        "id": "eval_03",
+        "question": "How does Neo4j achieve O(1) traversal step complexity in graph queries?",
+        "answer": "Index-Free Adjacency: Every node directly points to its neighboring relationship records in memory via double-linked pointer chains, allowing O(1) traversal step complexity regardless of total graph size. [02_graph_rag_and_neo4j_chunk_00] Multi-hop Retrieval and Graph Traversal Strategies When a user submits a query: 1. [02_graph_rag_and_neo4j_chunk_00] Real-Time Fraud Graph Analysis with Neo4j PaymentEngine protects against syndicated fraud by constructing an identity knowledge graph in Neo4j: - Nodes represent Account, CreditCard, DeviceFingerprint, and IPAddress. [03_distributed_systems_and_cloud_chunk_00] # GraphRAG and Knowledge Graphs with Neo4j ## 1. [02_graph_rag_and_neo4j_chunk_00]",
+        "metrics": {
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8433,
+          "context_precision": 1.0,
+          "context_recall": 1.0,
+          "ragas_score": 0.9608,
+          "latency_ms": 20.54
+        }
+      },
+      {
+        "id": "eval_04",
+        "question": "What services and database does AuthGateway depend on, and what does UserDirectory persist records in?",
+        "answer": "Key platform services in the enterprise reference architecture: - AuthGateway: Manages OAuth2/OIDC token verification and rate limiting. [03_distributed_systems_and_cloud_chunk_00] AuthGateway depends on RedisCluster for distributed session caching and communicates with UserDirectory via gRPC. [03_distributed_systems_and_cloud_chunk_00] UserDirectory persists user records in PostgreSQL and publishes audit events to KafkaBroker. [03_distributed_systems_and_cloud_chunk_00] In standard vector RAG, questions such as \"What common architectural dependency is shared between System Alpha and System Gamma?\" frequently fail because the connecting entities exist across different documents and chunks. [02_graph_rag_and_neo4j_chunk_00]",
+        "metrics": {
+          "faithfulness": 0.0,
+          "answer_relevancy": 0.7198,
+          "context_precision": 1.0,
+          "context_recall": 0.0,
+          "ragas_score": 0.43,
+          "latency_ms": 30.68
+        }
+      },
+      {
+        "id": "eval_05",
+        "question": "How does PaymentEngine detect syndicated fraud rings using Neo4j and device fingerprints?",
+        "answer": "Real-Time Fraud Graph Analysis with Neo4j PaymentEngine protects against syndicated fraud by constructing an identity knowledge graph in Neo4j: - Nodes represent Account, CreditCard, DeviceFingerprint, and IPAddress. [03_distributed_systems_and_cloud_chunk_00] It utilizes Neo4j for real-time fraud ring detection and multi-account identity graph analysis. [03_distributed_systems_and_cloud_chunk_00] - When an account attempts a checkout, Cypher queries traverse shared device and IP edges: MATCH (a1:Account {id: $account_id})-[:USES_DEVICE]->(d:DeviceFingerprint)<-[:USES_DEVICE]-(a2:Account) WHERE a1 <> a2 RETURN count(distinct a2) AS shared_accounts_count If more than 3 distinct accounts share a single device fingerprint within 48 hours, PaymentEngine automatically triggers Step-Up Multi-Factor Authentication. [03_distributed_systems_and_cloud_chunk_00] Hybrid Vector-Graph Indexing: Modern Neo4j instances (Neo4j 5.x and AuraDB) support native vector index creation directly on node embeddings using cosine or Euclidean distance: CALL db.index.vector.queryNodes('chunk_embeddings', 5, $query_embedding) YIELD node, score ## 3. [02_graph_rag_and_neo4j_chunk_00]",
+        "metrics": {
+          "faithfulness": 0.2,
+          "answer_relevancy": 0.8675,
+          "context_precision": 1.0,
+          "context_recall": 0.0,
+          "ragas_score": 0.5169,
+          "latency_ms": 21.94
+        }
+      }
+    ],
+    "averages": {
+      "faithfulness": 0.48,
+      "answer_relevancy": 0.8099,
+      "context_precision": 1.0,
+      "context_recall": 0.6,
+      "ragas_score": 0.7225,
+      "latency_ms": 22.552
+    }
+  },
+  "hybrid_rerank": {
+    "samples": [
+      {
+        "id": "eval_01",
+        "question": "What is the formula and smoothing constant used in Reciprocal Rank Fusion (RRF)?",
+        "answer": "Reciprocal Rank Fusion (RRF): RRF calculates a combined score for each document d across retrieval methods M according to the formula: RRF_Score(d) = SUM_{m in M} [ 1 / (k + rank_m(d)) ] Here, k is a smoothing constant, typically set to 60. [01_advanced_rag_architectures_chunk_00] In standard vector RAG, questions such as \"What common architectural dependency is shared between System Alpha and System Gamma?\" frequently fail because the connecting entities exist across different documents and chunks. [02_graph_rag_and_neo4j_chunk_00] RRF is scale-invariant and does not require calibrating heterogeneous raw score distributions between BM25 scores (unbounded positive floats) and cosine similarities ([-1, 1]). [01_advanced_rag_architectures_chunk_01] Convex Linear Combination (Weighted Score Fusion): Linear fusion normalizes both sparse scores and dense scores to a uniform [0, 1] range using MinMax or Sigmoid normalization: Score_Hybrid(d) = alpha * Score_Dense_norm(d) + (1 - alpha) * Score_BM25_norm(d) The parameter alpha balances lexical and semantic priority (alpha = 0.5 represents an equal split). [01_advanced_rag_architectures_chunk_01]",
+        "metrics": {
+          "faithfulness": 0.6,
+          "answer_relevancy": 0.7738,
+          "context_precision": 1.0,
+          "context_recall": 1.0,
+          "ragas_score": 0.8434,
+          "latency_ms": 3788.42
+        }
+      },
+      {
+        "id": "eval_02",
+        "question": "Why is a Cross-Encoder reranker more accurate than a bi-encoder for semantic passage scoring?",
+        "answer": "Cross-Encoder Reranking While bi-encoders produce separate embeddings for query and document, a Cross-Encoder passes the query and candidate passage simultaneously through cross-attention layers (e.g., `cross-encoder/ms-marco-MiniLM-L-6-v2` or `bge-reranker-large`). [01_advanced_rag_architectures_chunk_01] Reciprocal Rank Fusion (RRF): RRF calculates a combined score for each document d across retrieval methods M according to the formula: RRF_Score(d) = SUM_{m in M} [ 1 / (k + rank_m(d)) ] Here, k is a smoothing constant, typically set to 60. [01_advanced_rag_architectures_chunk_00] Convex Linear Combination (Weighted Score Fusion): Linear fusion normalizes both sparse scores and dense scores to a uniform [0, 1] range using MinMax or Sigmoid normalization: Score_Hybrid(d) = alpha * Score_Dense_norm(d) + (1 - alpha) * Score_BM25_norm(d) The parameter alpha balances lexical and semantic priority (alpha = 0.5 represents an equal split). [01_advanced_rag_architectures_chunk_01] In a production pipeline, Hybrid retrieval gathers top-25 candidate passages (high recall phase), and the Cross-Encoder re-ranks these into the top-3 to top-5 most relevant passages (high precision phase) before feeding them to the generator LLM. [01_advanced_rag_architectures_chunk_01]",
+        "metrics": {
+          "faithfulness": 0.6,
+          "answer_relevancy": 0.8452,
+          "context_precision": 1.0,
+          "context_recall": 1.0,
+          "ragas_score": 0.8613,
+          "latency_ms": 394.94
+        }
+      },
+      {
+        "id": "eval_03",
+        "question": "How does Neo4j achieve O(1) traversal step complexity in graph queries?",
+        "answer": "Index-Free Adjacency: Every node directly points to its neighboring relationship records in memory via double-linked pointer chains, allowing O(1) traversal step complexity regardless of total graph size. [02_graph_rag_and_neo4j_chunk_00] Multi-hop Retrieval and Graph Traversal Strategies When a user submits a query: 1. [02_graph_rag_and_neo4j_chunk_00] Real-Time Fraud Graph Analysis with Neo4j PaymentEngine protects against syndicated fraud by constructing an identity knowledge graph in Neo4j: - Nodes represent Account, CreditCard, DeviceFingerprint, and IPAddress. [03_distributed_systems_and_cloud_chunk_00] # GraphRAG and Knowledge Graphs with Neo4j ## 1. [02_graph_rag_and_neo4j_chunk_00]",
+        "metrics": {
+          "faithfulness": 1.0,
+          "answer_relevancy": 0.8433,
+          "context_precision": 1.0,
+          "context_recall": 1.0,
+          "ragas_score": 0.9608,
+          "latency_ms": 450.06
+        }
+      },
+      {
+        "id": "eval_04",
+        "question": "What services and database does AuthGateway depend on, and what does UserDirectory persist records in?",
+        "answer": "Key platform services in the enterprise reference architecture: - AuthGateway: Manages OAuth2/OIDC token verification and rate limiting. [03_distributed_systems_and_cloud_chunk_00] AuthGateway depends on RedisCluster for distributed session caching and communicates with UserDirectory via gRPC. [03_distributed_systems_and_cloud_chunk_00] UserDirectory persists user records in PostgreSQL and publishes audit events to KafkaBroker. [03_distributed_systems_and_cloud_chunk_00] In standard vector RAG, questions such as \"What common architectural dependency is shared between System Alpha and System Gamma?\" frequently fail because the connecting entities exist across different documents and chunks. [02_graph_rag_and_neo4j_chunk_00]",
+        "metrics": {
+          "faithfulness": 0.0,
+          "answer_relevancy": 0.7198,
+          "context_precision": 1.0,
+          "context_recall": 0.0,
+          "ragas_score": 0.43,
+          "latency_ms": 581.95
+        }
+      },
+      {
+        "id": "eval_05",
+        "question": "How does PaymentEngine detect syndicated fraud rings using Neo4j and device fingerprints?",
+        "answer": "Real-Time Fraud Graph Analysis with Neo4j PaymentEngine protects against syndicated fraud by constructing an identity knowledge graph in Neo4j: - Nodes represent Account, CreditCard, DeviceFingerprint, and IPAddress. [03_distributed_systems_and_cloud_chunk_00] It utilizes Neo4j for real-time fraud ring detection and multi-account identity graph analysis. [03_distributed_systems_and_cloud_chunk_00] - When an account attempts a checkout, Cypher queries traverse shared device and IP edges: MATCH (a1:Account {id: $account_id})-[:USES_DEVICE]->(d:DeviceFingerprint)<-[:USES_DEVICE]-(a2:Account) WHERE a1 <> a2 RETURN count(distinct a2) AS shared_accounts_count If more than 3 distinct accounts share a single device fingerprint within 48 hours, PaymentEngine automatically triggers Step-Up Multi-Factor Authentication. [03_distributed_systems_and_cloud_chunk_00] Hybrid Vector-Graph Indexing: Modern Neo4j instances (Neo4j 5.x and AuraDB) support native vector index creation directly on node embeddings using cosine or Euclidean distance: CALL db.index.vector.queryNodes('chunk_embeddings', 5, $query_embedding) YIELD node, score ## 3. [02_graph_rag_and_neo4j_chunk_00]",
+        "metrics": {
+          "faithfulness": 0.2,
+          "answer_relevancy": 0.8675,
+          "context_precision": 1.0,
+          "context_recall": 0.0,
+          "ragas_score": 0.5169,
+          "latency_ms": 651.54
+        }
+      }
+    ],
+    "averages": {
+      "faithfulness": 0.48,
+      "answer_relevancy": 0.8099,
+      "context_precision": 1.0,
+      "context_recall": 0.6,
+      "ragas_score": 0.7225,
+      "latency_ms": 1173.382
+    }
+  },
+  "graph_rag": {
+    "samples": [
+      {
+        "id": "eval_01",
+        "question": "What is the formula and smoothing constant used in Reciprocal Rank Fusion (RRF)?",
+        "answer": "Reciprocal Rank Fusion (RRF): RRF calculates a combined score for each document d across retrieval methods M according to the formula: RRF_Score(d) = SUM_{m in M} [ 1 / (k + rank_m(d)) ] Here, k is a smoothing constant, typically set to 60. [01_advanced_rag_architectures_chunk_00] The following structured entity relationships are established in the Knowledge Graph:\n(reciprocal_rank_fusion) -[:COMBINES_WITH]-> (bm25)\n(reciprocal_rank_fusion) -[:COMBINES_WITH]-> (all_minilm_l6_v2)\n(and) -[:COMMUNICATES_WITH]-> (userdirectory)\n(and) -[:PUBLISHES_TO]-> (kafkabroker)\n(userdirectory) -[:PERSISTS_IN]-> (postgresql) [knowledge_graph_facts] Candidate Fusion Strategies: RRF vs Convex Linear Combination When merging ranked lists from sparse (BM25) and dense retrievers, two primary fusion algorithms are deployed: 1. [01_advanced_rag_architectures_chunk_00] RRF is scale-invariant and does not require calibrating heterogeneous raw score distributions between BM25 scores (unbounded positive floats) and cosine similarities ([-1, 1]). [01_advanced_rag_architectures_chunk_00]",
+        "metrics": {
+          "faithfulness": 0.25,
+          "answer_relevancy": 0.7542,
+          "context_precision": 0.25,
+          "context_recall": 1.0,
+          "ragas_score": 0.5636,
+          "latency_ms": 18.28
+        }
+      },
+      {
+        "id": "eval_02",
+        "question": "Why is a Cross-Encoder reranker more accurate than a bi-encoder for semantic passage scoring?",
+        "answer": "Cross-Encoder Reranking While bi-encoders produce separate embeddings for query and document, a Cross-Encoder passes the query and candidate passage simultaneously through cross-attention layers (e.g., `cross-encoder/ms-marco-MiniLM-L-6-v2` or `bge-reranker-large`). [01_advanced_rag_architectures_chunk_01] Reciprocal Rank Fusion (RRF): RRF calculates a combined score for each document d across retrieval methods M according to the formula: RRF_Score(d) = SUM_{m in M} [ 1 / (k + rank_m(d)) ] Here, k is a smoothing constant, typically set to 60. [01_advanced_rag_architectures_chunk_00] While effective for thematic semantic matching, standard vector search suffers from critical real-world failure modes: 1. [01_advanced_rag_architectures_chunk_00] Convex Linear Combination (Weighted Score Fusion): Linear fusion normalizes both sparse scores and dense scores to a uniform [0, 1] range using MinMax or Sigmoid normalization: Score_Hybrid(d) = alpha * Score_Dense_norm(d) + (1 - alpha) * Score_BM25_norm(d) The parameter alpha balances lexical and semantic priority (alpha = 0.5 represents an equal split). [01_advanced_rag_architectures_chunk_00]",
+        "metrics": {
+          "faithfulness": 0.2,
+          "answer_relevancy": 0.8636,
+          "context_precision": 0.3333,
+          "context_recall": 1.0,
+          "ragas_score": 0.5992,
+          "latency_ms": 14.0
+        }
+      },
+      {
+        "id": "eval_03",
+        "question": "How does Neo4j achieve O(1) traversal step complexity in graph queries?",
+        "answer": "Index-Free Adjacency: Every node directly points to its neighboring relationship records in memory via double-linked pointer chains, allowing O(1) traversal step complexity regardless of total graph size. [02_graph_rag_and_neo4j_chunk_00] The following structured entity relationships are established in the Knowledge Graph:\n(neo4j) -[:IMPLEMENTS]-> (index_free_adjacency)\n(neo4j) -[:USES_QUERY_LANGUAGE]-> (cypher)\n(it) -[:UTILIZES]-> (neo4j)\n(paymentengine) -[:UTILIZES_FOR_FRAUD_DETECTION]-> (neo4j) [knowledge_graph_facts] Real-Time Fraud Graph Analysis with Neo4j PaymentEngine protects against syndicated fraud by constructing an identity knowledge graph in Neo4j: - Nodes represent Account, CreditCard, DeviceFingerprint, and IPAddress. [03_distributed_systems_and_cloud_chunk_00] Multi-hop Retrieval and Graph Traversal Strategies When a user submits a query: 1. [02_graph_rag_and_neo4j_chunk_00]",
+        "metrics": {
+          "faithfulness": 0.75,
+          "answer_relevancy": 0.8246,
+          "context_precision": 0.8333,
+          "context_recall": 1.0,
+          "ragas_score": 0.852,
+          "latency_ms": 28.2
+        }
+      },
+      {
+        "id": "eval_04",
+        "question": "What services and database does AuthGateway depend on, and what does UserDirectory persist records in?",
+        "answer": "The following structured entity relationships are established in the Knowledge Graph:\n(authgateway) -[:DEPENDS_ON]-> (rediscluster)\n(authgateway) -[:COMMUNICATES_WITH]-> (userdirectory)\n(userdirectory) -[:PERSISTS_IN]-> (postgresql)\n(and) -[:COMMUNICATES_WITH]-> (userdirectory)\n(and) -[:PUBLISHES_TO]-> (kafkabroker) [knowledge_graph_facts] Key platform services in the enterprise reference architecture: - AuthGateway: Manages OAuth2/OIDC token verification and rate limiting. [03_distributed_systems_and_cloud_chunk_00] AuthGateway depends on RedisCluster for distributed session caching and communicates with UserDirectory via gRPC. [03_distributed_systems_and_cloud_chunk_00] UserDirectory persists user records in PostgreSQL and publishes audit events to KafkaBroker. [03_distributed_systems_and_cloud_chunk_00]",
+        "metrics": {
+          "faithfulness": 0.75,
+          "answer_relevancy": 0.7583,
+          "context_precision": 0.5,
+          "context_recall": 0.0,
+          "ragas_score": 0.5021,
+          "latency_ms": 24.46
+        }
+      },
+      {
+        "id": "eval_05",
+        "question": "How does PaymentEngine detect syndicated fraud rings using Neo4j and device fingerprints?",
+        "answer": "Real-Time Fraud Graph Analysis with Neo4j PaymentEngine protects against syndicated fraud by constructing an identity knowledge graph in Neo4j: - Nodes represent Account, CreditCard, DeviceFingerprint, and IPAddress. [03_distributed_systems_and_cloud_chunk_00] The following structured entity relationships are established in the Knowledge Graph:\n(neo4j) -[:IMPLEMENTS]-> (index_free_adjacency)\n(neo4j) -[:USES_QUERY_LANGUAGE]-> (cypher)\n(it) -[:UTILIZES]-> (neo4j)\n(paymentengine) -[:UTILIZES_FOR_FRAUD_DETECTION]-> (neo4j)\n(paymentengine) -[:COMMUNICATES_WITH]-> (stripeapi)\n(and) -[:COMMUNICATES_WITH]-> (userdirectory)\n(and) -[:PUBLISHES_TO]-> (kafkabroker)\n(userdirectory) -[:PERSISTS_IN]-> (postgresql) [knowledge_graph_facts] It utilizes Neo4j for real-time fraud ring detection and multi-account identity graph analysis. [03_distributed_systems_and_cloud_chunk_00] - When an account attempts a checkout, Cypher queries traverse shared device and IP edges: MATCH (a1:Account {id: $account_id})-[:USES_DEVICE]->(d:DeviceFingerprint)<-[:USES_DEVICE]-(a2:Account) WHERE a1 <> a2 RETURN count(distinct a2) AS shared_accounts_count If more than 3 distinct accounts share a single device fingerprint within 48 hours, PaymentEngine automatically triggers Step-Up Multi-Factor Authentication. [03_distributed_systems_and_cloud_chunk_00]",
+        "metrics": {
+          "faithfulness": 0.5,
+          "answer_relevancy": 0.8426,
+          "context_precision": 0.5,
+          "context_recall": 0.5,
+          "ragas_score": 0.5857,
+          "latency_ms": 19.33
+        }
+      }
+    ],
+    "averages": {
+      "faithfulness": 0.49,
+      "answer_relevancy": 0.8087,
+      "context_precision": 0.4833,
+      "context_recall": 0.7,
+      "ragas_score": 0.6205,
+      "latency_ms": 20.854
+    }
+  }
+}

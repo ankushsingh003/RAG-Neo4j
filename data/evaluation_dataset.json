@@ -1,0 +1,37 @@
+[
+  {
+    "id": "eval_01",
+    "question": "What is the formula and smoothing constant used in Reciprocal Rank Fusion (RRF)?",
+    "ground_truth": "Reciprocal Rank Fusion (RRF) calculates the combined score as RRF_Score(d) = SUM_{m in M} [ 1 / (k + rank_m(d)) ], where k is a smoothing constant typically set to 60.",
+    "expected_entities": ["Reciprocal Rank Fusion", "RRF", "smoothing constant", "k = 60"],
+    "source_doc": "01_advanced_rag_architectures.txt"
+  },
+  {
+    "id": "eval_02",
+    "question": "Why is a Cross-Encoder reranker more accurate than a bi-encoder for semantic passage scoring?",
+    "ground_truth": "A Cross-Encoder passes the query and candidate passage simultaneously through cross-attention layers, computing token-to-token interactions between every word of the query and every word of the passage, eliminating the single vector pooling bottleneck of bi-encoders.",
+    "expected_entities": ["Cross-Encoder", "bi-encoder", "cross-attention", "token-to-token"],
+    "source_doc": "01_advanced_rag_architectures.txt"
+  },
+  {
+    "id": "eval_03",
+    "question": "How does Neo4j achieve O(1) traversal step complexity in graph queries?",
+    "ground_truth": "Neo4j achieves O(1) traversal step complexity through Index-Free Adjacency, where every node directly points to its neighboring relationship records in memory via double-linked pointer chains, regardless of total graph size.",
+    "expected_entities": ["Neo4j", "Index-Free Adjacency", "double-linked pointer chains", "O(1)"],
+    "source_doc": "02_graph_rag_and_neo4j.txt"
+  },
+  {
+    "id": "eval_04",
+    "question": "What services and database does AuthGateway depend on, and what does UserDirectory persist records in?",
+    "ground_truth": "AuthGateway depends on RedisCluster for distributed session caching and communicates with UserDirectory via gRPC. UserDirectory persists user records in PostgreSQL and publishes audit events to KafkaBroker.",
+    "expected_entities": ["AuthGateway", "RedisCluster", "UserDirectory", "gRPC", "PostgreSQL", "KafkaBroker"],
+    "source_doc": "03_distributed_systems_and_cloud.txt"
+  },
+  {
+    "id": "eval_05",
+    "question": "How does PaymentEngine detect syndicated fraud rings using Neo4j and device fingerprints?",
+    "ground_truth": "PaymentEngine traverses shared device and IP edges in Neo4j. If more than 3 distinct accounts share a single device fingerprint within 48 hours, it automatically triggers Step-Up Multi-Factor Authentication.",
+    "expected_entities": ["PaymentEngine", "Neo4j", "DeviceFingerprint", "shared accounts", "Multi-Factor Authentication"],
+    "source_doc": "03_distributed_systems_and_cloud.txt"
+  }
+]

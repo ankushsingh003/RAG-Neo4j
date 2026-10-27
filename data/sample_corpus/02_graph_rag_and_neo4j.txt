@@ -1,0 +1,32 @@
+# GraphRAG and Knowledge Graphs with Neo4j
+
+## 1. What is GraphRAG?
+GraphRAG integrates structured Knowledge Graphs (KG) with unstructured text retrieval to solve multi-hop reasoning and global dataset sense-making. In standard vector RAG, questions such as "What common architectural dependency is shared between System Alpha and System Gamma?" frequently fail because the connecting entities exist across different documents and chunks.
+GraphRAG organizes enterprise information into:
+- Nodes (Entities): Concepts, Technologies, Organizations, Microservices, and Protocols.
+- Edges (Relationships): Typed connections such as DEPENDS_ON, COMMUNICATES_VIA, DEVELOPED_BY, IMPLEMENTS, and CAUSES_FAILURE_IN.
+- Graph Communities: Clustered subgraphs detected via Leiden or Louvain community detection algorithms that provide hierarchical summaries.
+
+## 2. Neo4j Property Graph Model
+Neo4j is an enterprise native graph database utilizing the Labeled Property Graph (LPG) data model.
+Key architectural features include:
+1. Index-Free Adjacency: Every node directly points to its neighboring relationship records in memory via double-linked pointer chains, allowing O(1) traversal step complexity regardless of total graph size.
+2. Cypher Query Language: A declarative, ASCII-art pattern matching query language. For example:
+   MATCH (m:Microservice {name: 'AuthGateway'})-[:DEPENDS_ON]->(d:Database)
+   RETURN m.name, d.name, d.connection_pool_size
+3. Hybrid Vector-Graph Indexing: Modern Neo4j instances (Neo4j 5.x and AuraDB) support native vector index creation directly on node embeddings using cosine or Euclidean distance:
+   CALL db.index.vector.queryNodes('chunk_embeddings', 5, $query_embedding)
+   YIELD node, score
+
+## 3. Knowledge Extraction Pipeline for GraphRAG
+Constructing a production knowledge graph from raw text involves three systematic stages:
+1. Entity and Relation Extraction: An LLM or NER model identifies entity spans, entity types (e.g., TECH, ORG, PROTOCOL), and predicates linking entities into (Subject, Predicate, Object) triples.
+2. Entity Resolution and Deduplication: Standardizing aliases (e.g., mapping "K8s", "Kubernetes", and "Kube" to a single canonical entity node `Entity {id: 'Kubernetes'}`).
+3. Chunk-to-Entity Bi-directional Linking: Retaining provenance edges (:Chunk)-[:MENTIONS]->(:Entity) and (:Document)-[:CONTAINS]->(:Chunk), ensuring any graph traversal can instantly retrieve the verbatim source paragraphs for citation and auditability.
+
+## 4. Multi-hop Retrieval and Graph Traversal Strategies
+When a user submits a query:
+1. The retriever performs Entity Linking on the user question to find entry point nodes (anchor nodes).
+2. The engine executes a 1-hop and 2-hop neighborhood expansion Cypher traversal to discover interconnected nodes and their attributes.
+3. Connected subgraphs are serialized into tabular relation facts and formatted graph triples.
+4. The generation model receives both the dense text chunks and the structured graph path context, enabling zero-hallucination multi-hop explanations.
